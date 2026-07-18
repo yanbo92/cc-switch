@@ -21,6 +21,29 @@ fn update_cached_override(value: Option<PathBuf>) {
     }
 }
 
+fn override_from_value(value: Option<Value>) -> Option<PathBuf> {
+    match value {
+        Some(Value::String(path_str)) => {
+            let path_str = path_str.trim();
+            if path_str.is_empty() {
+                return None;
+            }
+
+            let path = resolve_path(path_str);
+            if !path.exists() {
+                log::warn!("配置的 app_config_dir 不存在: {path:?}，将使用默认路径");
+                return None;
+            }
+            Some(path)
+        }
+        Some(_) => {
+            log::warn!("{STORE_KEY_APP_CONFIG_DIR} 类型不正确，应为字符串");
+            None
+        }
+        None => None,
+    }
+}
+
 /// 获取缓存中的 app_config_dir 覆盖路径
 pub fn get_app_config_dir_override() -> Option<PathBuf> {
     override_cache().read().ok()?.clone()
@@ -35,37 +58,35 @@ fn read_override_from_store(app: &tauri::AppHandle) -> Option<PathBuf> {
         }
     };
 
-    match store.get(STORE_KEY_APP_CONFIG_DIR) {
-        Some(Value::String(path_str)) => {
-            let path_str = path_str.trim();
-            if path_str.is_empty() {
-                return None;
-            }
-
-            let path = resolve_path(path_str);
-
-            if !path.exists() {
-                log::warn!(
-                    "Store 中配置的 app_config_dir 不存在: {path:?}\n\
-                     将使用默认路径。"
-                );
-                return None;
-            }
-
-            log::info!("使用 Store 中的 app_config_dir: {path:?}");
-            Some(path)
-        }
-        Some(_) => {
-            log::warn!("Store 中的 {STORE_KEY_APP_CONFIG_DIR} 类型不正确，应为字符串");
-            None
-        }
-        None => None,
+    let value = override_from_value(store.get(STORE_KEY_APP_CONFIG_DIR));
+    if let Some(path) = &value {
+        log::info!("使用 Store 中的 app_config_dir: {path:?}");
     }
+    value
 }
 
 /// 从 Store 刷新 app_config_dir 覆盖值并更新缓存
 pub fn refresh_app_config_dir_override(app: &tauri::AppHandle) -> Option<PathBuf> {
     let value = read_override_from_store(app);
+    update_cached_override(value.clone());
+    value
+}
+
+/// 从 Tauri Store 的默认磁盘位置加载覆盖值，供无 AppHandle 的 CLI 使用。
+pub fn refresh_app_config_dir_override_from_disk() -> Option<PathBuf> {
+    if std::env::var_os("CC_SWITCH_TEST_HOME").is_some() {
+        update_cached_override(None);
+        return None;
+    }
+
+    let store_path = dirs::config_dir()?
+        .join("com.ccswitch.desktop")
+        .join("app_paths.json");
+    let value = std::fs::read_to_string(&store_path)
+        .ok()
+        .and_then(|content| serde_json::from_str::<Value>(&content).ok())
+        .and_then(|store| store.get(STORE_KEY_APP_CONFIG_DIR).cloned());
+    let value = override_from_value(value);
     update_cached_override(value.clone());
     value
 }

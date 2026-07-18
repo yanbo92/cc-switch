@@ -341,6 +341,21 @@ For detailed guides on every feature, check out the **[User Manual](docs/user-ma
 
 > **Note**: On first launch, you can manually import existing CLI tool configs as the default provider.
 
+### Command-Line Switching
+
+Install the standalone CLI from a source checkout, then use it to list or switch configured providers without opening the UI:
+
+```bash
+cargo install --path src-tauri --bin ccs
+```
+
+```bash
+ccs list codex
+ccs use codex <provider-id>
+```
+
+Run `ccs --help` for the supported app IDs. The `list` output marks the current provider with `*`.
+
 ## Download & Installation
 
 ### System Requirements

@@ -344,6 +344,21 @@ CC_SWITCH_GDK_BACKEND=wayland ./CC-Switch-*.AppImage
 
 > **注意**：首次启动可以手动导入现有 CLI 工具配置作为默认供应商。
 
+### 命令行切换
+
+在源码目录安装独立 CLI 后，即可在不打开界面的情况下列出和切换已配置的供应商：
+
+```bash
+cargo install --path src-tauri --bin ccs
+```
+
+```bash
+ccs list codex
+ccs use codex <provider-id>
+```
+
+运行 `ccs --help` 可查看支持的应用标识；`list` 输出使用 `*` 标记当前供应商。
+
 ## 下载安装
 
 ### 系统要求
