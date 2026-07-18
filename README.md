@@ -18,6 +18,16 @@ English | [中文](README_ZH.md) | [日本語](README_JA.md) | [Deutsch](README_
 
 </div>
 
+## About This Fork
+
+This fork adds `ccs`, a standalone command-line interface for switching CC Switch providers without opening the desktop app.
+
+- Uses the same SQLite database and application path overrides as CC Switch, so changes are immediately visible in both the CLI and desktop app.
+- Supports listing and switching providers for Claude, Claude Desktop, Codex, Gemini, Grok Build, OpenCode, OpenClaw, and Hermes.
+- Publishes a prebuilt `ccs-darwin-arm64` binary for Apple Silicon Macs. Other platforms can build the CLI from source.
+
+The desktop application and all other features continue to come from the [upstream CC Switch project](https://github.com/farion1231/cc-switch).
+
 ## ❤️Sponsor
 
 > [Want to appear here?](mailto:farion1231@gmail.com)
@@ -343,7 +353,15 @@ For detailed guides on every feature, check out the **[User Manual](docs/user-ma
 
 ### Command-Line Switching
 
-Install the standalone CLI from a source checkout, then use it to list or switch configured providers without opening the UI:
+Download the prebuilt Apple Silicon macOS binary from this fork's latest release:
+
+```bash
+curl -L https://github.com/yanbo92/cc-switch/releases/latest/download/ccs-darwin-arm64 -o ccs-darwin-arm64
+chmod +x ccs-darwin-arm64
+sudo install -m 755 ccs-darwin-arm64 /usr/local/bin/ccs
+```
+
+Or install the standalone CLI from a source checkout:
 
 ```bash
 cargo install --path src-tauri --bin ccs

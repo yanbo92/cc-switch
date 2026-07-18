@@ -18,6 +18,16 @@
 
 </div>
 
+## 关于这个 Fork
+
+这个 fork 新增了独立命令行工具 `ccs`，无需打开桌面应用即可切换 CC Switch 供应商。
+
+- 与 CC Switch 共用同一个 SQLite 数据库和应用路径重映射，因此 CLI 与桌面应用中的切换结果会立即保持一致。
+- 支持列出和切换 Claude、Claude Desktop、Codex、Gemini、Grok Build、OpenCode、OpenClaw 和 Hermes 的供应商。
+- Release 提供仅适用于 Apple 芯片 Mac 的预编译 `ccs-darwin-arm64` 二进制；其他平台可从源码构建 CLI。
+
+桌面应用及其他功能仍来自 [CC Switch 上游项目](https://github.com/farion1231/cc-switch)。
+
 ## ❤️赞助商
 
 > [想出现在这里？](mailto:farion1231@gmail.com)
@@ -346,7 +356,15 @@ CC_SWITCH_GDK_BACKEND=wayland ./CC-Switch-*.AppImage
 
 ### 命令行切换
 
-在源码目录安装独立 CLI 后，即可在不打开界面的情况下列出和切换已配置的供应商：
+从这个 fork 的最新 Release 下载 Apple 芯片 macOS 二进制：
+
+```bash
+curl -L https://github.com/yanbo92/cc-switch/releases/latest/download/ccs-darwin-arm64 -o ccs-darwin-arm64
+chmod +x ccs-darwin-arm64
+sudo install -m 755 ccs-darwin-arm64 /usr/local/bin/ccs
+```
+
+也可在源码目录安装独立 CLI：
 
 ```bash
 cargo install --path src-tauri --bin ccs
